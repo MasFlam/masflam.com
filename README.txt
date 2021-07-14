@@ -20,3 +20,7 @@
 | ###ignore                                                                    |
 | This makes the preprocessor ignore whatever follows on this line             |
 |==============================================================================|
+| All source code in this repository is licensed under the GNU General Public  |
+| License version 3 as published by the Free Software Foundation. The license  |
+| text is available in the file named LICENSE.                                 |
+|==============================================================================|
