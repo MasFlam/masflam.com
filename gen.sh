@@ -67,3 +67,7 @@ done
 
 log 'Generation done.' "$(wc -l "$errfile" | cut -d' ' -f 1)" 'errors occurred.'
 rm "$errfile"
+
+[ -f website.tar.gz ] && log 'Removing website.tar.gz' && rm website.tar.gz
+log 'Packing output dir into website.tar.gz'
+tar -czf website.tar.gz output
