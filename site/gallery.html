@@ -1,0 +1,72 @@
+<html>
+<head>
+
+###include head.html
+
+<title>MasFlam's Website</title>
+<meta name=description content="MasFlam's Gallery">
+<meta name=keywords content="debian, linux, free software, gnu, based, gallery, monero, xmr">
+
+<style type="text/css">
+#list > li {
+	list-style-type: none;
+	margin-bottom: 10px;
+}
+
+#list > li > p {
+	margin-bottom: 5px;
+}
+
+#list > li > img {
+	max-width: 100%;
+}
+
+#list > li > video {
+	max-width: 100%;
+}
+</style>
+
+</head>
+<body>
+
+<div id=content>
+	<div id=navigation>
+		<h2>Navigation</h2>
+		<ul>
+			<li><a href="index.html">Home</a></li>
+			<li><a href="based.html">Based</a></li>
+			<li><a href="gallery.html">Gallery</a></li>
+			<li><a href="based-blog.html">Based Blog</a></li>
+		</ul>
+	</div>
+	
+	<hr>
+	
+	<div id=gallery>
+		<h2>Gallery</h2>
+		<p>
+			Unless otherwise noted, all media on this page and files linked on it for download were created by me and are in the public domain.
+		</p>
+		<ul id=list>
+			<li>
+				<p>No, I will not 'just run a VM'.</p>
+				<img src="static/ihatetheproprietarysoftware.jpg">
+			</li>
+			<li>
+				<p>Monero disk wallpaper; 1920x1080 render. (<a href="static/monero-disk.blend">Blender scene</a> (with an unoptimized mesh; I have a simplified one))</p>
+				<img src="static/monero-disk-fhd.png">
+			</li>
+			<li>
+				<p>STACK THEM UP</p>
+				<img src="static/stack-them-up.png">
+			</li>
+			<li>
+				<p>Define spin</p>
+				<video loop autoplay style="width: 50%;"><source src="static/monero-spin.mp4" type="video/mp4"></video>
+			</li>
+		</ul>
+	</div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,58 @@
+body {
+	background-color: #222;
+	color: #f0f0f0;
+}
+
+#content {
+	max-width: 1280px;
+	margin-top: 1em;
+	margin-bottom: 1em;
+	margin-left: auto;
+	margin-right: auto;
+	padding: 10px 20px;
+	border: 1px solid gray;
+	border-radius: 5px;
+	background-color: #101010;
+}
+
+#article {
+	text-align: justify;
+}
+
+#navigation ul {
+	padding-left: 4px;
+}
+
+#navigation li {
+	display: inline-block;
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+	margin: 0px 4px;
+	padding: 0px 4px;
+}
+
+.wallet {
+	overflow-wrap: break-word;
+	font-weight: bold;
+}
+
+.codeblock {
+	font-family: monospace;
+	background-color: #333;
+	padding: 3pt 7pt;
+	border-radius: 5px;
+}
+
+.codeblock pre {
+	margin-top: 2px;
+	margin-bottom: 2px;
+}
+
+a {
+	color: lightblue;
+}
+
+a:visited {
+	color: #9770cc;
+}

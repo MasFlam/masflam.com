@@ -1,0 +1,71 @@
+<html>
+<head>
+
+###include blog_head.html
+
+<title>Using MPD on Debian | The Based Blog</title>
+<meta name=description content="Using MPD on Debian">
+<meta name=keywords content="mpd, debian, systemd, pulseaudio, music, linux, based">
+
+</head>
+<body>
+
+<div id=content>
+	<span><a href="../based-blog.html">Back to article list</a></span>
+	
+	<hr>
+	
+	<div id=article>
+		<h1>Using MPD on Debian</h1>
+		<p>
+			MPD (Music Player Daemon) is one of the best solutions to playing music on GNU+Linux. There's a plethora of different GUI, TUI and CLI clients for it.
+			It's great and all but setting it up on Debian is was (at least for me) a pain, so this article should help others trying to do it in the future.
+			As a sidenote, you shouldn't use the version present in Debian Stable because it's <em>very</em> archaic. The one in the Debian Unstable repos is fine though.
+		</p>
+		<p>First of all, install mpd, mpc (the CLI client) and/or a client of your preference:</p>
+###codeblock start
+sudo apt install mpd mpc ncmpcpp
+###codeblock end
+		<p>Then create a config file for MPD in <code>~/.config/mpd/mpd.conf</code> that looks like this:</p>
+###codeblock start
+# Put the path to the directory with your music here (tylde is expanded to your homedir)
+music_directory "~/Music"
+
+# Output using Pulseaudio
+audio_output {
+	type "pulse"
+	name "Pulseaudio output"
+}
+
+# You can also use ALSA or other backends; see mpd.conf(5)
+#audio_output {
+#	type "alsa"
+#	name "ALSA output"
+#}
+###codeblock end
+		<p>Next you should disable and stop the systemd service:</p>
+###codeblock start
+sudo systemctl disable mpd
+sudo systemctl stop mpd mpd.socket # I'm not sure if you have to put mpd.socket here
+###codeblock end
+		<p>And finally, enable and start the systemd service, but not a system-wide one:</p>
+###codeblock start
+systemctl --user enable mpd
+systemctl --user start mpd mpd.socket # Again I'm not sure if you have to put mpd.socket here
+###codeblock end
+		<p>
+			And you're good to go. MPD will start on user login, and it will work with Pulseaudio (it doesn't work as a non-user service).
+			You can test if your music is seen by MPD by running <code>mpc listall | pager</code>, which lists all scanned files.
+		</p>
+	</div>
+	
+	<div id=links>
+		<h2>Links</h2>
+		<ul>
+			<li><a href="https://musicpd.org">Music Player Daemon website</a></li>
+		</ul>
+	</div>
+</div>
+
+</body>
+</html>
