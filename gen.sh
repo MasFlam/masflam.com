@@ -1,10 +1,25 @@
 #!/bin/sh
 
-[ -d output ] && rm -rf output
+errfile=output/errs.$$.temp
+
+log() {
+	echo '[gen.sh]' "$@"
+}
+
+err() {
+	log '   ERROR:' "$@"
+	echo err >> "$errfile"
+}
+
+[ -d output ] && log 'Removing output dir' && rm -rf output
+log 'Copying over site to output'
 cp -r site output
+
+touch "$errfile"
 
 find output -type f \! -regex '.*\.temp$' | while IFS='' read -r fname
 do
+	log 'Processing' "${fname#output/}"
 	state=normal
 	while IFS='' read -r line
 	do
@@ -17,7 +32,12 @@ do
 			elif [ "${line%% *}" = '###include' ]
 			then
 				f=res/"${line#\#\#\#include }"
-				[ -f "$f" ] && cat "$f" >> "$fname".temp
+				if [ -f "$f" ]
+				then
+					cat "$f" >> "$fname".temp
+				else
+					err 'File' "$f" 'not found'
+				fi
 			elif [ "${line%% *}" != '###ignore' ]
 			then
 				echo "$line" >> "$fname".temp
@@ -40,5 +60,10 @@ do
 		;;
 		esac
 	done < "$fname"
+	log 'Processed' "${fname#output/}"
 	mv "$fname".temp "$fname"
 done
+
+
+log 'Generation done.' "$(wc -l "$errfile" | cut -d' ' -f 1)" 'errors occurred.'
+rm "$errfile"
