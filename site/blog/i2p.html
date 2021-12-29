@@ -1,0 +1,140 @@
+<html>
+<head>
+
+###include blog_head.html
+
+<title>Setting up i2p | The Based Blog</title>
+<meta name=description content="About extrepo">
+<meta name=keywords content="extrepo, debian, apt, repositories, external, repos, linux, based">
+
+</head>
+<body>
+
+<div id=content>
+	<span><a href="../based-blog.html">Back to article list</a></span>
+	
+	<hr>
+	
+	<div id=article>
+		<h1>Setting up i2p with the router on an external server</h1>
+		<p>
+			I2P (short for Invisible Internet Protocol) is an anonymizing layer for TCP and UDP.
+			It is a much smaller darknet than Tor, but more resilient to Sybil (aka 51%) attacks.
+			It also doesn't have a notion of "exit nodes" – all traffic stays inside the i2p network.
+			Well, there is a thing called outproxies, but from my experience they aren't very useful.
+			I2P is just not meant to be used as a VPN to the clearnet.
+		</p>
+		<p>
+			It all seems dandy, until you learn that for it to become at all usable, your node (or <i>router</i>,
+			in I2P terms) needs to be running for some time. Ideally, you would have it run 24/7, but of course
+			that's off the table for most people. The solution though is to run a router on a server (can be a rented VPS,
+			or one you physically own), and then connect to that server from your local machine when you want to browse i2p.
+			This article will guide you through creating such a setup, assuming you already have a Debian server up and
+			running and that you're using Linux locally. (It probably will work with Mac OS, and it might work with Windows,
+			but no guarantees there)
+		</p>
+		<h2>Server-side setup</h2>
+		<p>
+			First, we are going to want to make sure our system is up to date. Then, we will install i2pd –
+			a lightweight implementation of an I2P router. The "official" implementation is written in Java,
+			and is pretty memory-hungry, so I'm opting for using i2pd instead.
+		</p>
+		<p>
+			Now if you're using a "Stable" version of Debian, the version of i2pd in your package repository is
+			probably months-, if not years-old, so I recommend switching to Debian Unstable. Don't get fooled by
+			the name – I use it exclusively and never had any stability problems. If you really don't want to do
+			that, either you'll have to be content with an old i2pd version (don't), or add an external repository.
+			You can see how to do that <a href="https://i2pd.readthedocs.io/en/latest/user-guide/install/#debian">here</a>.
+			I'm also going to add an entry for it to Extrepo (<a href="extrepo.html">see my article on Extrepo</a>).
+		</p>
+###codeblock start
+sudo apt update
+sudo apt upgrade
+sudo apt install i2pd
+###codeblock end
+		<p>
+			Next we're going to configure i2pd to fit our needs. First, look into the <code>/etc/i2pd/i2pd.conf</code>
+			file. The main point of interest there for us it the <code>ipv4</code> and <code>ipv6</code> options.
+			There you can enable the use of IPv6 by your router. Do that if you know your server can use IPv6 and you
+			know what that means. Don't change anything otherwise. Everything else is using sane defaults, but
+			the default configuration also adds some tunnels for IRC, which we don't need right now. To turn
+			those off, comment out everything in <code>/etc/i2pd/tunnels.conf</code> by prefixing lines with hashes,
+			and make sure that the content of files inside <code>/etc/i2pd/tunnels.d</code> is also commented.
+		</p>
+		<p>
+			With i2pd configured, we now want to reload it in order for the configuration to take effect.
+		</p>
+###codeblock start
+sudo systemctl reload i2pd
+###codeblock end
+		<p>
+			That is all we need to do from the server's side.
+		</p>
+		<h2>Local setup</h2>
+		<p>
+			On your local machine (the one you will be browsing i2p from) you are now going to write a shell script that
+			does something called <i>SSH port forwarding</i>. More precisely, I've already written a script for you:
+		</p>
+###codeblock start
+#!/bin/sh
+ssh -nTNL 127.0.0.1:4444:127.0.0.1:4444 your_user@your_ddress &
+sshpid="$!"
+your_browser
+kill "$sshpid"
+###codeblock end
+		<p>
+			Just replace <code>your_user</code> with the username of the user on your server, <code>your_address</code>
+			with the address of your server, and <code>your_browser</code> with your browser of choice. Mind you, this
+			only works if your browser doesn't detach from the shell it's launched in. In particular, I know this doesn't
+			work with Brave, which leads me to believe it won't work with most if not all Chromium-based browsers.
+			I know it works with Firefox (and LibreWolf, so probably most forks of Firefox) though. But I generally
+			recommend using a different browser for i2p than the one you use daily, so you might as well install LibreWolf,
+			GNU IceCat, or just Firefox – whichever one you don't use for browsing the normal web. How to do that is beyond
+			the scope of this guide, but I'm sure you'll manage. Anyway, just copy that shell script with your details filled
+			in to a file in your filesystem, for example <code>~/.local/bin/browse-i2p</code> or <code>~/bin/browse-i2p</code>
+			– wherever you store your user-installed scripts. The only important thing is for it to be on your <code>PATH</code>.
+			Then run <code>chmod +x path/to/your/script</code> to be able to run it.
+		</p>
+		<p>
+			Run that script, and in your browser, configure it to use the HTTP proxy located at <code>127.0.0.1</code>
+			(or just <code>localhost</code>), port 4444. In Firefox/LibreWolf it's in <code>Settings → General →
+			Network Settings → Settings... → Manual proxy configuration</code>. You will also want to disable any HTTPS-only-like
+			settings, since most eepsites (that's how services on i2p are commonly called) use plain old HTTP. HTTPS is generally
+			not needed when communicating over i2p, since i2p itself is already a layer of encryption, and it's not very useful
+			for traffic encryption anyway because of how SSL/TLS certificates work. Also, in Firefox and Firefox-based browsers,
+			I recommend visiting <code>about:config</code>, searching for <code>keyword.enable</code>, and disabling that option.
+			You will not be able to search anything on Google or DuckDuckGo anyway, so this only improves user experience.
+		</p>
+		<p>
+			Et voilà, you have an i2p router and browser set up. As the last thing, you can run the command
+			<code>ssh -nTNL 127.0.0.1:7070:127.0.0.1:7070 your_user@your_address</code> in a terminal window, and go to
+			<code>http://localhost:7070</code> in your browser (should also work in the i2p-configured one) to see
+			the router console. There you can see some stats about your router, like the tunnel creation success rate.
+			If <code>Network status</code> says <code>OK</code>, and your tunnel creation success rate is above 40%,
+			it means all's working fine and there should not be any issues. Otherwise, is the success rate is very low
+			(like single-digit low), that means something's gone wrong, and you can try and look for help on the internet.
+		</p>
+		<p>
+			As a starter, you can visit some eepsites that provide a list of other eepsites:
+			<ul>
+				<li><a href="http://stats.i2p">stats.i2p</a></li>
+				<li><a href="http://reg.i2p">reg.i2p</a></li>
+				<li><a href="http://hopjoy.i2p">hopjoy.i2p</a></li>
+				<li><a href="http://notbob.i2p">notbob.i2p</a></li>
+			</ul>
+		</p>
+	</div>
+	
+	<div id=links>
+		<h2>Links</h2>
+		<ul>
+			<li><a href="https://geti2p.net">Official i2p website</a></li>
+			<li><a href="https://i2pd.website">i2pd website</a></li>
+		</ul>
+	</div>
+	
+###include blog_donation.html
+</div>
+
+</body>
+</html>

@@ -1,0 +1,72 @@
+<html>
+<head>
+
+###include blog_head.html
+
+<title>Extrepo | The Based Blog</title>
+<meta name=description content="About extrepo">
+<meta name=keywords content="extrepo, debian, apt, repositories, external, repos, linux, based">
+
+</head>
+<body>
+
+<div id=content>
+	<span><a href="../based-blog.html">Back to article list</a></span>
+	
+	<hr>
+	
+	<div id=article>
+		<h1>Extrepo – external apt repository manager</h1>
+		<p>
+			Not all software is available in Debian's repositories, not even in Unstable or Experimental.
+			Some software creators provide downloads of </code>.deb</code>s, and some host their own
+			apt repositories. Extrepo exists to help in the latter case. It's a tool for managing
+			these external repositories, without the need for unsigned shell scripts or copy-pasting
+			commands to your terminal.
+		</p>
+		<h3 id=installation>Installation and configuration</h3>
+		<p>
+			You can install Extrepo from apt (<code>apt install extrepo</code>).
+			By default only repositories with software meeting the Debian Free Software Guidelines (DFSG)
+			licensing requirements can be used and searched. To change that, in <code>/etc/extrepo/config.yaml</code>
+			uncomment the lines with <code>contrib</code> (for DFSG-free software that has non-DFSG-free dependencies),
+			and/or <code>non-free</code> (for non-DFSG-free packages).
+		</p>
+		<h3 id=usage>Usage</h3>
+		<p>
+			You can get a list of all external repositories Extrepo knows about with <code>extrepo search</code>,
+			and you can search for a regular expression by passing in a third argument. It's a long list,
+			so if you don't need all the details for all repositories, you can pipe it through grep
+			(<code> | grep '^Found'</code>). If the repository you want is on the list, great! You can
+			enable it with <code>extrepo enable repository-name</code> (ran as root). Similarly, to disable
+			a previously enabled repository, use <code>extrepo disable repository-name</code>. If a repository
+			stops working or some metadata about it changes, use <code>extrepo update repository-name</code>.
+		</p>
+		<p>
+			But what if the external repository you're looking for isn't there? Well, you will have to
+			add it yourself. See, the data about repositories comes from the
+			<a href="https://salsa.debian.org/extrepo-team/extrepo-data"><code>extrepo-data</code></a> git repository,
+			hosted on Debian's GitLab instance, <a href="https://salsa.debian.org">Salsa</a>. To add a repository
+			to Extrepo, you need an account there. Creating one will usually take you a day, since the admin
+			has to approve it. After you create an account, you will have to go to the git repository
+			page and fork it. Then <code>git clone</code> your fork onto your machine and create a new file in
+			<code>repos/debian</code> named after your external repository. Copy over the contents from another
+			file in there, and looking at how other files are structured, edit the appropriate data.
+			There isn't a comprehensive guide on this, but some pattern recognition is enough not to screw up badly.
+			TODO
+		</p>
+	</div>
+	
+	<div id=links>
+		<h2>Links</h2>
+		<ul>
+			<li><a href="https://salsa.debian.org/extrepo-team/extrepo">Extrepo git repository</a></li>
+			<li><a href="https://salsa.debian.org/extrepo-team/extrepo-data">Extrepo data git repository</a></li>
+		</ul>
+	</div>
+	
+###include blog_donation.html
+</div>
+
+</body>
+</html>
