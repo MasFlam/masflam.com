@@ -32,6 +32,16 @@ body {
 	padding: 0px 4px;
 }
 
+#based table {
+	border: 1px solid gray;
+	border-collapse: collapse;
+}
+
+#based table td, #based table th {
+	border: 1px solid gray;
+	padding: 5px;
+}
+
 .wallet {
 	overflow-wrap: break-word;
 	font-weight: bold;
